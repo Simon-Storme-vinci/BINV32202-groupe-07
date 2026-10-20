@@ -2,7 +2,9 @@ export const OFFER_STATUSES = ["SUBMITTED", "PENDING", "PUBLISHED", "ASSIGNED", 
 
 export type OfferStatus = (typeof OFFER_STATUSES)[number];
 
-export type PeriodCode = "P1" | "P2" | "OTHER";
+export const PERIOD_CODES = ["P1", "P2", "OTHER"] as const;
+
+export type PeriodCode = (typeof PERIOD_CODES)[number];
 
 /** Offre lue avec son entreprise, son année et sa période (jointures SQL). */
 export interface OfferDbo {
