@@ -24,7 +24,7 @@ const offers = [
 
 describe("OffersPage", () => {
   it("affiche les offres avec leurs libellés français", async () => {
-    stubFetch({ "/api/offers": () => Response.json(offers) });
+    const fetchMock = stubFetch({ "/api/offers": () => Response.json(offers) });
 
     render(<OffersPage user={contactUser} token="jeton" onUnauthorized={vi.fn()} />);
 
@@ -34,6 +34,11 @@ describe("OffersPage", () => {
     expect(screen.getByText("Autre")).toBeInTheDocument();
     expect(screen.getByText("2 offres")).toBeInTheDocument();
     expect(screen.getByText("Les offres que vous avez déposées.")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Période" })).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith("/api/offers", {
+      headers: { Authorization: "jeton" },
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it("adapte la description au profil", async () => {
