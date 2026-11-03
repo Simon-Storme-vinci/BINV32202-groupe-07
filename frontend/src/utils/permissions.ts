@@ -6,3 +6,5 @@ import type { User } from "../models/user.ts";
 /** Même règle que le backend : administrateur, étudiant ou contact déposant. */
 export const canListOffers = (user: User): boolean =>
   user.kind !== "CONTACT" || user.roles.includes("DEPOSITOR");
+
+export const isStudent = (user: User): boolean => user.kind === "STUDENT";

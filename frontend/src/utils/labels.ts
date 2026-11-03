@@ -1,8 +1,23 @@
 import type { CompanyStatus } from "../models/company.ts";
 import type { OfferStatus, PeriodCode } from "../models/offer.ts";
 import type { ContactRole, User, UserKind } from "../models/user.ts";
+import type { ApplicationStatus } from "../models/application.ts";
 
 export type StatusTone = "success" | "warning" | "info" | "neutral";
+
+export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
+  IN_PROGRESS: "En cours",
+  SELECTED: "Retenue",
+  REJECTED: "Non retenue",
+  WITHDRAWN: "Retirée",
+};
+
+export const APPLICATION_STATUS_TONES: Record<ApplicationStatus, StatusTone> = {
+  IN_PROGRESS: "info",
+  SELECTED: "success",
+  REJECTED: "warning",
+  WITHDRAWN: "neutral",
+};
 
 export const COMPANY_STATUS_LABELS: Record<CompanyStatus, string> = {
   ACTIVE: "Active",

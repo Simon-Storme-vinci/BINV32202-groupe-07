@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import EmptyState from "../components/EmptyState.tsx";
 import ErrorState from "../components/ErrorState.tsx";
 import LoadingState from "../components/LoadingState.tsx";
 import OfferTable from "../components/OfferTable.tsx";
 import { useOffers } from "../hooks/useOffers.ts";
-import type { PeriodCode } from "../models/offer.ts";
+import type { Offer, PeriodCode } from "../models/offer.ts";
 import type { User } from "../models/user.ts";
+import { useApplications } from "../hooks/useApplications.ts";
 
 interface OffersPageProps {
   user: User;
@@ -43,7 +44,11 @@ const OffersPage = ({ user, token, onUnauthorized }: OffersPageProps) => {
         <p className="result-count">
           {offers.length} offre{offers.length > 1 ? "s" : ""}
         </p>
-        <OfferTable offers={offers} />
+        {user.kind === "STUDENT" ? (
+          <StudentOffers offers={offers} token={token} onUnauthorized={onUnauthorized} />
+        ) : (
+          <OfferTable offers={offers} />
+        )}
       </>
     );
   };
@@ -70,3 +75,94 @@ const OffersPage = ({ user, token, onUnauthorized }: OffersPageProps) => {
 };
 
 export default OffersPage;
+
+interface StudentOffersProps {
+  offers: Offer[];
+  token: string;
+  onUnauthorized: () => void;
+}
+
+const StudentOffers = ({ offers, token, onUnauthorized }: StudentOffersProps) => {
+  const { applications, apply } = useApplications(token, onUnauthorized);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const selectableOfferIds = new Set(
+    offers
+      .filter((offer) => {
+        const application = applications.find((item) => item.offerId === offer.id);
+        return application === undefined || application.status === "WITHDRAWN";
+      })
+      .map((offer) => offer.id),
+  );
+
+  const closeModal = () => {
+    if (isSubmitting) return;
+    setSelectedOffer(null);
+    setMessage("");
+    setError(null);
+  };
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (selectedOffer === null) return;
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await apply(selectedOffer.id, message);
+      setSelectedOffer(null);
+      setMessage("");
+    } catch (reason: unknown) {
+      setError(reason instanceof Error ? reason.message : "Candidature impossible");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <OfferTable
+        offers={offers}
+        selectableOfferIds={selectableOfferIds}
+        onApply={(offer) => {
+          setError(null);
+          setSelectedOffer(offer);
+        }}
+      />
+      {selectedOffer && (
+        <div className="modal-backdrop" role="presentation" onMouseDown={closeModal}>
+          <section
+            className="application-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="application-modal-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <h2 id="application-modal-title">Candidater à cette offre</h2>
+            <p>{selectedOffer.title}</p>
+            <form onSubmit={submit}>
+              <label htmlFor="application-message">Message (facultatif)</label>
+              <textarea
+                id="application-message"
+                value={message}
+                maxLength={300}
+                onChange={(event) => setMessage(event.target.value)}
+              />
+              {error && <ErrorState message={error} />}
+              <div className="modal-actions">
+                <button type="button" className="button" onClick={closeModal} disabled={isSubmitting}>
+                  Annuler
+                </button>
+                <button type="submit" className="button button-primary" disabled={isSubmitting}>
+                  {isSubmitting ? "Envoi…" : "Confirmer"}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+    </>
+  );
+};

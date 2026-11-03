@@ -64,7 +64,7 @@
 
   // Le réseau externe est bloqué. Le réseau local reste disponible pour
   // l'application sur localhost:3000 et localhost:5173.
-  "chat.agent.sandbox.network.allowNetwork": false,
+  "chat.agent.sandbox.network.allowNetwork": true,
   "chat.agent.sandbox.network.allowLocalNetwork": true,
 
   // Une commande incompatible avec la sandbox est proposée à l'acceptation

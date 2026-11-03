@@ -11,7 +11,7 @@ import { hasContactRole, isAdmin, isStudent } from "./permissions.ts";
  */
 const visibilityFilter = (viewer: User): OfferFilter => {
   if (isAdmin(viewer)) return {};
-  if (isStudent(viewer)) return { status: "PUBLISHED" };
+  if (isStudent(viewer)) return { status: "PUBLISHED", currentAcademicYearOnly: true };
   if (hasContactRole(viewer, "DEPOSITOR")) return { depositorContactId: viewer.id };
   throw new HttpError(403, "FORBIDDEN", "Vous n'avez pas accès aux offres");
 };
