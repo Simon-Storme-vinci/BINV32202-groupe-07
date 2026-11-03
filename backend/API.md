@@ -171,3 +171,52 @@ récente à la plus ancienne, puis de la plus récente à la plus ancienne.
 - `401` `UNAUTHENTICATED` : session absente ou invalide.
 - `403` `FORBIDDEN` : contact seulement promoteur ou signataire.
 - `400` `INVALID_QUERY` : `period` est répété ou ne vaut pas `P1`, `P2` ou `OTHER`.
+
+## Candidatures
+
+Les candidatures sont réservées aux étudiants. Les listes sont limitées à l'année
+académique courante. Une seule candidature non retirée est possible pour un étudiant et
+une offre. Le retrait est logique : la candidature passe à `WITHDRAWN`, reste historisée
+et une nouvelle candidature peut ensuite être créée.
+
+### POST /applications
+
+Crée une candidature pour une offre publiée de l'année courante.
+
+```json
+{
+  "offerId": 1,
+  "message": "Message facultatif"
+}
+```
+
+Le message est facultatif et limité à 300 caractères.
+
+- `201` : candidature créée avec le statut `IN_PROGRESS`
+- `400` `INVALID_BODY` : corps invalide ou message de plus de 300 caractères
+- `401` `UNAUTHENTICATED` : session absente ou invalide
+- `403` `FORBIDDEN` : utilisateur qui n'est pas étudiant
+- `404` `NOT_FOUND` : offre inexistante, non publiée ou d'une autre année
+- `409` `APPLICATION_EXISTS` : candidature active déjà existante
+
+### GET /applications
+
+Retourne les candidatures de l'étudiant connecté pour l'année courante. Une seule ligne,
+la plus récente, est retournée par offre ; une candidature retirée peut donc être
+remplacée par une nouvelle candidature.
+
+- `200` : tableau de candidatures
+- `401` `UNAUTHENTICATED` : session absente ou invalide
+- `403` `FORBIDDEN` : utilisateur qui n'est pas étudiant
+
+### DELETE /applications/:id
+
+Retire la candidature de l'étudiant connecté. La ligne est conservée avec le statut
+`WITHDRAWN` et aucun motif n'est demandé.
+
+- `204` : candidature retirée
+- `400` `INVALID_BODY` : identifiant invalide
+- `401` `UNAUTHENTICATED` : session absente ou invalide
+- `403` `FORBIDDEN` : utilisateur qui n'est pas étudiant
+- `404` `NOT_FOUND` : candidature absente ou appartenant à un autre étudiant
+- `409` `APPLICATION_PROCESSED` : candidature déjà sélectionnée, refusée ou retirée

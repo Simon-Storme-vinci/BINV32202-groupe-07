@@ -73,6 +73,22 @@ describe("OffersPage", () => {
     expect(screen.getByText("Toutes les offres, tous statuts confondus.")).toBeInTheDocument();
   });
 
+  it("ouvre la modale de candidature depuis une offre", async () => {
+    stubFetch({
+      "/api/offers": () => Response.json([offers[0]]),
+      "/api/applications": () => Response.json([]),
+    });
+
+    render(<OffersPage user={studentUser} token="jeton" onUnauthorized={vi.fn()} />);
+
+    await screen.findByText("Refonte du portail client");
+    fireEvent.click(await screen.findByRole("button", { name: "Candidater" }));
+
+    expect(screen.getByRole("dialog")).toHaveTextContent("Candidater à cette offre");
+    expect(screen.getByLabelText("Message (facultatif)")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirmer" })).toBeInTheDocument();
+  });
+
   it("affiche un refus d'accès renvoyé par le backend", async () => {
     stubFetch({ "/api/offers": () => new Response(null, { status: 403 }) });
 

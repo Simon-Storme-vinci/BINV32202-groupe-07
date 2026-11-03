@@ -8,12 +8,15 @@ export interface OfferFilter {
   depositorContactId?: number;
   /** Limite aux offres d'une période. */
   period?: PeriodCode;
+  /** Limite aux offres de l'année académique courante. */
+  currentAcademicYearOnly?: boolean;
 }
 
 interface FindAllParams {
   status: OfferStatus | null;
   depositorContactId: number | null;
   period: PeriodCode | null;
+  currentAcademicYearOnly: number;
 }
 
 export const createOffersRepository = (db: Db) => {
@@ -30,16 +33,18 @@ export const createOffersRepository = (db: Db) => {
     WHERE (@status IS NULL OR o.status = @status)
       AND (@depositorContactId IS NULL OR o.depositor_contact_id = @depositorContactId)
       AND (@period IS NULL OR p.code = @period)
+      AND (@currentAcademicYearOnly = 0 OR ay.is_current = 1)
     ORDER BY ay.start_date DESC, o.created_at DESC
   `);
 
   return {
     /** Offres correspondant au filtre, de la plus récente année à la plus ancienne. */
-    findAll: ({ status, depositorContactId, period }: OfferFilter): OfferDbo[] =>
+    findAll: ({ status, depositorContactId, period, currentAcademicYearOnly }: OfferFilter): OfferDbo[] =>
       findAll.all({
         status: status ?? null,
         depositorContactId: depositorContactId ?? null,
         period: period ?? null,
+        currentAcademicYearOnly: currentAcademicYearOnly ? 1 : 0,
       }),
   };
 };

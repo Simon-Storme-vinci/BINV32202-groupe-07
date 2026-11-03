@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:3000
+@token = remplacer-par-un-jeton-etudiant
+
+### Consulter mes candidatures
+GET {{baseUrl}}/applications
+Authorization: {{token}}
+
+### Candidater à une offre publiée
+POST {{baseUrl}}/applications
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "offerId": 1,
+  "message": "Ma candidature pour cette offre."
+}
+
+### Retirer une candidature
+DELETE {{baseUrl}}/applications/1
+Authorization: {{token}}
