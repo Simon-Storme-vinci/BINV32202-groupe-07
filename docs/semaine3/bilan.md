@@ -89,3 +89,41 @@ La commande globale `npm.cmd run check` a terminé avec le code de sortie 0.
   test échoue : cette vérification aurait demandé une modification temporaire du
   comportement de production, non nécessaire pour cette tâche.
 
+
+## Conversation : audit des guides à la lumière de Web 2
+
+1. La demande était d’examiner les consignes réellement présentes dans le dépôt, de les
+   comparer aux supports Web 2 et de résumer les correspondances et écarts dans un rapport
+   HTML, sans modifier les guides.
+2. Les guides lus sont les
+   [instructions Copilot](../../.github/copilot-instructions.md), le
+   [README](../../README.md), la documentation d’[architecture](../architecture.md), le
+   [cahier des charges](../cdc_gesta_developpement.md), le
+   [contrat API](../../backend/API.md) et le
+   [modèle de pull request](../../.github/pull_request_template.md). Aucun fichier
+   `AGENTS.md` n’a été trouvé.
+3. Le rapport
+   [auditWeb2.html](./auditWeb2.html) confronte ces guides aux passages pertinents des
+   séances Web 2, avec des liens vers les pages des supports PDF.
+
+### Conclusion de l’audit
+
+- **Correspondances :** le contrat API et les consignes de mise à jour des exemples REST
+  concordent avec les conventions HTTP enseignées. L’organisation frontend par modèles,
+  services, hooks, composants et pages est cohérente avec les exemples d’organisation des
+  fichiers et de modèles. La transmission des props et la propriété de l’état partagé
+  d’authentification dans `App` reprennent les principes vus sur les props et le
+  *lifting state up*.
+- **Écarts et recommandations :** les couches backend contrôleurs/services/repositories
+  sont une convention propre au projet, et non une exigence attribuée au cours. Le guide
+  frontend pourrait ajouter une règle sur le passage des handlers React sans les exécuter
+  au rendu, illustrée par les supports. Pour une future authentification réelle, rappeler
+  explicitement qu’un mot de passe doit être haché ; le mode démo actuel n’en stocke pas
+  et est documenté comme réservé au développement.
+- **Limites des sources :** les supports consultés ne justifient pas de présenter la
+  validation des entrées ou l’accessibilité comme des attentes Web 2. Le rapport ne conclut
+  donc ni à leur conformité ni à leur absence au regard du cours.
+
+Les guides n’ont pas été modifiés. Le HTML a été analysé, ses 22 liens locaux ont été
+vérifiés et son affichage a été contrôlé dans le navigateur. Aucune suite de tests du
+projet n’a été lancée pour ce rapport documentaire.

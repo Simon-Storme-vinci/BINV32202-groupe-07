@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Audit des guides du projet Gesta au regard des supports Web 2."
+    />
+    <title>Audit des guides à la lumière de Web 2 — Gesta</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #526078;
+        --line: #d9e0ea;
+        --panel: #f5f7fb;
+        --yes: #087443;
+        --yes-soft: #e8f7ef;
+        --partial: #8a4b08;
+        --partial-soft: #fff3df;
+        --missing: #a4262c;
+        --missing-soft: #fff0ef;
+        --link: #174ea6;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #fff;
+        font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main { max-width: 1280px; margin: 0 auto; padding: 44px 24px 64px; }
+      h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+      h2 { margin: 34px 0 10px; font-size: 1.4rem; }
+      p { max-width: 88ch; }
+      .lead { margin: 0 0 22px; color: var(--muted); font-size: 1.1rem; }
+      .scope, .conclusion {
+        margin-top: 20px;
+        padding: 16px 18px;
+        border-radius: 8px;
+        background: var(--panel);
+      }
+      .scope p, .conclusion p { margin: 0; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+      table { width: 100%; min-width: 1120px; border-collapse: collapse; }
+      caption { padding: 14px 16px; color: var(--muted); text-align: left; }
+      th, td {
+        padding: 15px 16px;
+        border-top: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th { border-top: 0; background: var(--panel); }
+      tbody th { width: 17%; background: var(--panel); }
+      tbody tr + tr th, tbody tr + tr td { border-top: 1px solid var(--line); }
+      a { color: var(--link); text-underline-offset: 3px; }
+      .status {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: .9rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .yes { color: var(--yes); background: var(--yes-soft); }
+      .partial { color: var(--partial); background: var(--partial-soft); }
+      .missing { color: var(--missing); background: var(--missing-soft); }
+      .small { color: var(--muted); font-size: .94rem; }
+      @media (max-width: 600px) {
+        main { padding: 30px 16px 48px; }
+        th, td { padding: 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Audit des guides à la lumière de Web 2</h1>
+      <p class="lead">
+        Comparaison des consignes du dépôt avec des attentes effectivement repérées dans
+        les supports Web 2, sans transformer une pratique de projet en exigence du cours.
+      </p>
+
+      <section class="scope" aria-labelledby="scope-title">
+        <h2 id="scope-title">Périmètre et méthode</h2>
+        <p>
+          Guides lus : <a href="../../.github/copilot-instructions.md">instructions Copilot</a>,
+          <a href="../../README.md">README</a>,
+          <a href="../architecture.md">architecture</a>,
+          <a href="../cdc_gesta_developpement.md">cahier des charges</a>,
+          <a href="../../backend/API.md">contrat API</a> et
+          <a href="../../.github/pull_request_template.md">modèle de pull request</a>.
+          Aucun fichier <code>AGENTS.md</code> n’a été trouvé. Les références Web 2 ci-dessous
+          pointent vers les pages précises des PDF du dossier <code>web2/</code>.
+          « Partielle » signale une ressemblance réelle, mais pas une règle identique ou
+          applicable à toute l’architecture.
+        </p>
+      </section>
+
+      <h2>Comparaison des attentes et des guides</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>
+            Correspondances vérifiables entre les supports Web 2 et les consignes du dépôt.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Attente ou convention Web 2 (source)</th>
+              <th scope="col">Guide examiné (fichier et passage)</th>
+              <th scope="col">Correspondance</th>
+              <th scope="col">Écart ou ajout proposé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Conventions HTTP / REST</th>
+              <td>
+                <a href="web2/seance-02.pdf#page=3">Séance 02, p. 3–4</a> :
+                verbes HTTP associés aux opérations et paramètres de requête utilisés pour
+                préciser une recherche.
+              </td>
+              <td>
+                <a href="../../backend/API.md">backend/API.md</a> décrit les routes, méthodes
+                et paramètres, par exemple <code>GET /offers?period=…</code>.
+                Les <a href="../../.github/copilot-instructions.md">instructions Copilot</a>
+                demandent de mettre à jour le contrat API et la requête HTTP correspondante.
+                <span class="status yes">Oui</span>
+              </td>
+              <td>
+                Rien d’important à ajouter : conserver la synchronisation entre route,
+                documentation et exemple REST Client.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Modèles et organisation des fichiers frontend</th>
+              <td>
+                <a href="web2/seance-10.pdf#page=3">Séance 10, p. 2–4</a> présente
+                l’organisation des fichiers, un modèle typé dans <code>models/recipe.ts</code>
+                et un module de données séparé.
+              </td>
+              <td>
+                <a href="../architecture.md">docs/architecture.md</a> sépare modèles,
+                services, hooks, composants et pages ; le README explique le choix TypeScript.
+                <span class="status partial">Partielle</span>
+              </td>
+              <td>
+                La séparation frontend est cohérente. Les couches backend
+                contrôleurs/services/repositories sont une convention propre à Gesta ;
+                ne pas les présenter comme une exigence de Web 2 sans support correspondant.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Props : données transmises du parent à l’enfant</th>
+              <td>
+                <a href="web2/seance-08.pdf#page=3">Séance 08, p. 3</a> définit les props
+                comme les données passées par le composant parent au composant enfant.
+              </td>
+              <td>
+                Les <a href="../../.github/copilot-instructions.md">instructions Copilot</a>
+                disent que <code>App</code> possède l’état d’authentification et transmet le
+                jeton et le callback de déconnexion aux pages. L’architecture précise que
+                les composants réutilisables ne connaissent pas les routes.
+                <span class="status yes">Oui</span>
+              </td>
+              <td>
+                Le principe est explicite et cohérent ; garder cette règle lors de l’ajout
+                d’autres états partagés.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">État partagé remonté au plus proche parent commun</th>
+              <td>
+                <a href="web2/seance-14.pdf#page=3">Séance 14, p. 3–4</a> : remonter l’état
+                au parent commun, puis passer aux enfants la valeur et une fonction de mise
+                à jour.
+              </td>
+              <td>
+                Les guides attribuent explicitement la session à l’unique
+                <code>useAuth</code> dans <code>App</code> et interdisent aux pages de recréer
+                leur propre état d’authentification.
+                <span class="status yes">Oui</span>
+              </td>
+              <td>
+                Bonne traduction du principe du cours ; le guide pourrait préciser que
+                cette propriété unique concerne l’état partagé, sans imposer de remonter
+                tout état local des composants.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Handlers React : passer une fonction, ne pas l’exécuter au rendu</th>
+              <td>
+                <a href="web2/seance-12.pdf#page=3">Séance 12, p. 3–4</a> illustre la
+                différence entre passer un handler et appeler immédiatement la fonction
+                dans le JSX.
+              </td>
+              <td>
+                Les guides décrivent les responsabilités des pages et composants, mais ne
+                formulent pas cette convention d’événement.
+                <span class="status missing">Absente</span>
+              </td>
+              <td>
+                Ajouter une courte règle aux conventions frontend, avec un exemple
+                <code>onClick={handleAction}</code> et une mention des fonctions fléchées
+                lorsque des arguments doivent être transmis.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Authentification et protection des mots de passe</th>
+              <td>
+                <a href="web2/seance-03.pdf#page=3">Séance 03, p. 3</a> présente le JWT
+                comme preuve d’identité transmise aux requêtes.
+                <a href="web2/seance-04.pdf#page=2">Séance 04, p. 2–3</a> indique de ne pas
+                stocker les mots de passe en clair et de conserver un hash.
+              </td>
+              <td>
+                <a href="../architecture.md">Architecture</a> et
+                <a href="../../backend/API.md">API</a> indiquent que le jeton ne porte que
+                l’identité et que rôles/droits sont relus en base. Le
+                <a href="../../README.md">README</a> précise que la connexion actuelle est
+                passwordless, réservée au développement et refusée en production.
+                <span class="status partial">Partielle</span>
+              </td>
+              <td>
+                Pas de contradiction pour le mode démo : aucun mot de passe n’y est stocké.
+                Le choix de ne pas placer les rôles dans le JWT est différent de l’exemple
+                de cours, mais le guide explique la relecture en base. Pour une future
+                authentification réelle, rappeler explicitement le hachage des mots de passe.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Sujets non conclus faute de source probante</h2>
+      <p>
+        Les guides du dépôt imposent la validation HTTP côté contrôleurs
+        (<a href="../../.github/copilot-instructions.md">instructions Copilot</a>) et
+        documentent les erreurs de requête dans
+        <a href="../../backend/API.md">l’API</a>. Cependant, les passages Web 2 cités ici
+        sur les événements <code>input</code>/<code>submit</code> ne prescrivent pas de
+        règles de validation des valeurs. Je ne qualifie donc pas cette validation
+        d’attente Web 2. De même, aucun passage précis sur l’accessibilité n’est retenu :
+        ce rapport ne conclut ni à une conformité ni à une lacune du cours sur ce sujet.
+      </p>
+
+      <aside class="conclusion">
+        <p>
+          <strong>Conclusion.</strong> Les consignes Gesta sont bien alignées avec les
+          supports Web 2 sur REST, props et état partagé React. L’organisation frontend
+          est cohérente, tandis que les couches backend relèvent du projet. Le manque le
+          plus directement justifié par les supports examinés est l’absence d’une règle
+          explicite sur le passage des handlers React. Le traitement du JWT et le mode
+          de démonstration sont documentés et ne contredisent pas les supports ; il serait
+          utile de conserver cette distinction lors d’une future authentification réelle.
+        </p>
+      </aside>
+      <p class="small">
+        Aucun guide du dépôt n’a été modifié. Les recommandations de ce document sont des
+        propositions d’audit, pas des changements appliqués.
+      </p>
+    </main>
+  </body>
+</html>
