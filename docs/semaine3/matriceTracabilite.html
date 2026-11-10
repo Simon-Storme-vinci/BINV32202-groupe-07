@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Matrice de traçabilité des exigences EF-32 et EF-33 avec les tests existants du projet Gesta."
+    />
+    <title>Matrice de traçabilité EF-32 / EF-33 — Gesta</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #526078;
+        --line: #d9e0ea;
+        --panel: #f5f7fb;
+        --covered: #087443;
+        --covered-soft: #e8f7ef;
+        --partial: #8a4b08;
+        --partial-soft: #fff3df;
+        --absent: #a4262c;
+        --absent-soft: #fff0ef;
+        --link: #174ea6;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #fff;
+        font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main { max-width: 1280px; margin: 0 auto; padding: 44px 24px 64px; }
+      h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+      h2 { margin: 38px 0 10px; font-size: 1.45rem; }
+      h3 { margin: 0 0 8px; font-size: 1.08rem; }
+      p { max-width: 85ch; }
+      .lead { margin: 0 0 24px; color: var(--muted); font-size: 1.1rem; }
+      .summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0 28px;
+      }
+      .summary span, .coverage {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .9rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .covered { color: var(--covered); background: var(--covered-soft); }
+      .partial { color: var(--partial); background: var(--partial-soft); }
+      .absent { color: var(--absent); background: var(--absent-soft); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+      table { width: 100%; min-width: 1050px; border-collapse: collapse; }
+      caption { padding: 14px 16px; color: var(--muted); text-align: left; }
+      th, td {
+        padding: 15px 16px;
+        border-top: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th { border-top: 0; background: var(--panel); }
+      tbody th { width: 9%; background: var(--panel); }
+      tbody tr + tr th, tbody tr + tr td { border-top: 1px solid var(--line); }
+      .case { min-width: 200px; }
+      .test { min-width: 235px; }
+      .assertions { min-width: 310px; }
+      a { color: var(--link); text-underline-offset: 3px; }
+      code {
+        padding: 1px 4px;
+        border-radius: 4px;
+        background: var(--panel);
+        font-size: .92em;
+      }
+      .note, .legend {
+        margin-top: 20px;
+        padding: 16px 18px;
+        border-radius: 8px;
+        background: var(--panel);
+      }
+      .note p, .legend p { margin: 0; }
+      .legend { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
+      .legend p { flex-basis: 100%; }
+      .out-of-scope { margin-top: 14px; }
+      .small { color: var(--muted); font-size: .94rem; }
+      @media (max-width: 600px) {
+        main { padding: 30px 16px 48px; }
+        th, td { padding: 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Matrice de traçabilité des tests</h1>
+      <p class="lead">
+        Cette matrice confronte les exigences EF-32 et EF-33 du cahier des charges aux
+        tests existants. La couverture est jugée d’après les assertions qui établissent
+        le résultat attendu, pas seulement d’après l’appel d’une route.
+      </p>
+
+      <p>
+        Source des exigences :
+        <a href="../cdc_gesta_developpement.md#L199">cahier des charges, § 7.4</a>.
+        Les tests API sont dans
+        <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> ;
+        les tests d’interface concernés sont
+        <a href="../../frontend/tests/ApplicationsPage.test.tsx">ApplicationsPage.test.tsx</a>
+        et <a href="../../frontend/tests/OffersPage.test.tsx">OffersPage.test.tsx</a>.
+      </p>
+
+      <div class="summary" aria-label="Résumé de la couverture">
+        <span class="covered">Couvert : cas effectivement vérifié</span>
+        <span class="partial">Partiel : assertion incomplète ou cas confondu</span>
+        <span class="absent">Absent : aucun test probant relevé</span>
+      </div>
+
+      <h2>EF-32 — Candidater et retirer sa candidature</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>
+            Cas normaux, refus et limites de la création et du retrait d’une candidature.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Exigence</th>
+              <th scope="col" class="case">Cas à vérifier</th>
+              <th scope="col">Résultat attendu</th>
+              <th scope="col" class="test">Test existant (fichier et nom)</th>
+              <th scope="col" class="assertions">Assertions utiles</th>
+              <th scope="col">Couverture</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Créer une candidature à une offre publiée, avec un message.</td>
+              <td>La candidature est créée ; son statut initial est « En cours » et le message est conservé.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L16">
+                  API — « crée une candidature puis refuse le doublon actif »
+                </a>
+              </td>
+              <td>
+                <code>first.status === 201</code>,
+                <code>first.body.status === "IN_PROGRESS"</code> et
+                <code>first.body.message === "Je suis motivée"</code>.
+                L’offre Fleet App du seed est publiée.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Créer une candidature sans message (message facultatif).</td>
+              <td>La création réussit et le message peut être absent ou nul.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L88">
+                  API — « retire logiquement une candidature et autorise une nouvelle candidature »
+                </a>
+              </td>
+              <td>
+                Le test poste sans propriété <code>message</code> et vérifie
+                <code>created.status === 201</code> ainsi que
+                <code>created.body.message === null</code>.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Accéder au formulaire de candidature depuis une offre.</td>
+              <td>L’étudiant peut ouvrir le formulaire et saisir un message facultatif avant confirmation.</td>
+              <td>
+                <a href="../../frontend/tests/OffersPage.test.tsx#L76">
+                  Interface — « ouvre la modale de candidature depuis une offre »
+                </a>
+              </td>
+              <td>
+                Le test vérifie la boîte de dialogue, le champ
+                <code>Message (facultatif)</code> et le bouton <code>Confirmer</code>.
+                Il ne vérifie pas l’envoi de la candidature ni la réponse de l’API.
+              </td>
+              <td><span class="coverage partial">Partiel</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Refuser une candidature à une offre non publiée.</td>
+              <td>Aucune candidature n’est créée ; l’API refuse l’offre.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L189">
+                  API — « refuse une candidature à une offre non publiée de l'année courante »
+                </a>
+              </td>
+              <td>
+                <code>response.status === 404</code>,
+                <code>response.body.error.code === "NOT_FOUND"</code> et une vérification
+                que la candidature n’apparaît pas dans la liste. L’offre Client Portal
+                est <code>SUBMITTED</code> et de l’année courante :
+                <a href="../../backend/src/db/seed/offersData.ts#L25">données du seed</a>.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Retirer sa candidature tant qu’elle n’a pas été traitée.</td>
+              <td>Le retrait réussit ; la candidature reste historisée avec le statut « Retirée ».</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L88">
+                  API — « retire logiquement une candidature et autorise une nouvelle candidature »
+                </a>
+              </td>
+              <td>
+                Après <code>withdrawn.status === 204</code>, GET vérifie que l’identifiant
+                initial est encore listé avec <code>status === "WITHDRAWN"</code> ;
+                une nouvelle candidature reçoit ensuite <code>201</code> et un nouvel ID.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Refuser le retrait d’une candidature déjà traitée.</td>
+              <td>Le retrait est refusé avec un conflit indiquant que la candidature a déjà été traitée.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L166">
+                  API — « refuse de retirer une candidature déjà traitée »
+                </a>
+              </td>
+              <td>
+                <code>response.status === 409</code> et
+                <code>response.body.error.code === "APPLICATION_PROCESSED"</code>.
+                L’identifiant 3 correspond à une candidature <code>SELECTED</code> du seed.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Depuis l’interface, confirmer le retrait d’une candidature.</td>
+              <td>Après confirmation, l’interface envoie une requête DELETE sur la candidature choisie.</td>
+              <td>
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx#L40">
+                  Interface — « retire une candidature après confirmation »
+                </a>
+              </td>
+              <td>
+                Le test clique sur <code>Retirer</code> et vérifie que le fetch vise
+                <code>/api/applications/1</code> avec la méthode <code>DELETE</code>.
+                La réponse simulée <code>204</code> n’est pas suivie d’une assertion sur
+                l’état affiché ou le statut persisté.
+              </td>
+              <td><span class="coverage partial">Partiel</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Réserver création et retrait aux étudiants.</td>
+              <td>Un utilisateur non étudiant ne peut ni candidater ni retirer une candidature.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L149">
+                  API — « refuse l'accès aux candidatures pour un utilisateur non étudiant »
+                </a>
+              </td>
+              <td>
+                Pour un administrateur, GET, POST et DELETE renvoient chacun
+                <code>403</code> avec le code <code>FORBIDDEN</code>.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Un étudiant ne peut pas retirer la candidature d’un autre.</td>
+              <td>Le retrait de la candidature étrangère est refusé et celle-ci reste active pour son propriétaire.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L126">
+                  API — « refuse à un étudiant de retirer la candidature d'un autre étudiant »
+                </a>
+              </td>
+              <td>
+                La requête étrangère reçoit <code>404</code> / <code>NOT_FOUND</code> ;
+                une lecture sous l’identité du propriétaire retrouve l’ID avec
+                <code>IN_PROGRESS</code>.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>EF-33 — Consulter ses candidatures et leur statut</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>
+            Isolation des données de l’étudiant et vérification des statuts affichés.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Exigence</th>
+              <th scope="col" class="case">Cas à vérifier</th>
+              <th scope="col">Résultat attendu</th>
+              <th scope="col" class="test">Test existant (fichier et nom)</th>
+              <th scope="col" class="assertions">Assertions utiles</th>
+              <th scope="col">Couverture</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Un étudiant ne voit pas les candidatures d’un autre étudiant.</td>
+              <td>La réponse ne contient que les candidatures du compte connecté.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L35">
+                  API — « liste uniquement les candidatures de l'étudiant connecté »
+                </a>
+              </td>
+              <td>
+                La requête est faite comme Lucas ; <code>response.body</code> a une longueur
+                de 1 et contient l’offre Fleet App avec le statut <code>IN_PROGRESS</code>.
+                Le seed contient aussi, sur cette même offre, une candidature d’Inès :
+                la taille vérifiée exclut donc cette candidature étrangère.
+                Voir <a href="../../backend/src/db/seed/offersData.ts#L157">les candidatures du seed</a>.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Afficher le statut « En cours ».</td>
+              <td>L’étudiant voit un libellé compréhensible pour le statut en cours.</td>
+              <td>
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx#L29">
+                  Interface — « affiche les candidatures et leurs statuts »
+                </a>
+              </td>
+              <td>
+                <code>findByText("Application React")</code> et
+                <code>getByText("En cours")</code> sont vérifiés sur la page.
+                L’API vérifie aussi <code>IN_PROGRESS</code> dans la réponse de liste.
+              </td>
+              <td><span class="coverage covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Afficher le statut « Retirée ».</td>
+              <td>Une candidature retirée reste visible avec le libellé « Retirée ».</td>
+              <td>
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx#L29">
+                  Interface — « affiche les candidatures et leurs statuts »
+                </a>
+              </td>
+              <td>
+                <code>getByText("Retirée")</code> est vérifié sur une donnée simulée.
+                L’API vérifie désormais le statut <code>WITHDRAWN</code> pour Inès, mais
+                les tests ne valident pas l’intégration réelle entre cette réponse et
+                cet affichage.
+              </td>
+              <td><span class="coverage partial">Partiel</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Afficher les statuts « Retenue » et « Non retenue ».</td>
+              <td>Les deux statuts sont retournés par l’API et affichés avec leur libellé.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts#L48">
+                  API — « liste les statuts de candidature de l'étudiant connecté »
+                </a>
+                ; aucun test d’affichage de ces deux statuts n’a été relevé.
+              </td>
+              <td>
+                Les réponses API de Mateusz et Léa sont vérifiées avec
+                <code>SELECTED</code> et <code>REJECTED</code>. Aucun test d’interface ne
+                vérifie encore les libellés « Retenue » et « Non retenue » :
+                <a href="../../backend/tests/db/seed.test.ts#L93">seed.test.ts</a>.
+                Le mapping existe dans
+                <a href="../../frontend/src/utils/labels.ts#L8">labels.ts</a>, mais il
+                n’a pas été vérifié ici par un test de rendu ou une vérification navigateur.
+              </td>
+              <td><span class="coverage partial">Partiel</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Comportements testés hors EF-32 / EF-33</h2>
+      <p>
+        Ces tests sont utiles, mais vérifient des règles ou détails d’implémentation qui
+        ne sont pas explicitement formulés dans EF-32 ou EF-33. Ils ne sont donc pas
+        comptés comme couverture de ces exigences.
+      </p>
+      <ul class="out-of-scope">
+        <li>
+          <a href="../../backend/tests/applications.test.ts#L16">
+            Le doublon de candidature active est refusé
+          </a>
+          avec <code>409</code> et <code>APPLICATION_EXISTS</code> : règle de non-duplication.
+        </li>
+        <li>
+          <a href="../../backend/tests/applications.test.ts#L175">
+            Un message de 301 caractères est refusé
+          </a>
+          avec <code>400</code> : limite de validation documentée par l’API, mais absente
+          du texte EF-32.
+        </li>
+        <li>
+          <a href="../../frontend/tests/ApplicationsPage.test.tsx#L59">
+            La page signale une session expirée
+          </a>
+          en appelant <code>onUnauthorized</code> après une réponse <code>401</code> :
+          comportement d’authentification, hors EF-32 / EF-33.
+        </li>
+      </ul>
+
+      <aside class="note">
+        <p>
+          <strong>Conclusion :</strong> les tests API couvrent maintenant le refus isolé
+          d’une offre non publiée, la persistance du retrait, les statuts en liste, ainsi
+          que les droits d’accès et la propriété des candidatures. La principale lacune
+          restante concerne l’affichage, dans l’interface, des statuts « Retenue » et
+          « Non retenue » ; l’intégration réelle des statuts API avec les libellés UI
+          n’est pas testée de bout en bout. Aucune vérification manuelle navigateur n’a
+          été effectuée ; une vérification complémentaire consisterait à ouvrir la page
+          des candidatures avec les comptes Mateusz (retenue) et Léa (non retenue).
+        </p>
+      </aside>
+    </main>
+  </body>
+</html>

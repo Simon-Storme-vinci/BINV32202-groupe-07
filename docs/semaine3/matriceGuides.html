@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Matrice des guides feedforward et des senseurs feedback présents dans le dépôt Gesta."
+    />
+    <title>Matrice des guides et des senseurs — Gesta</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #526078;
+        --line: #d9e0ea;
+        --panel: #f5f7fb;
+        --guide: #175cd3;
+        --guide-soft: #e8f0ff;
+        --sensor: #087443;
+        --sensor-soft: #e8f7ef;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #fff;
+        font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main { max-width: 1180px; margin: 0 auto; padding: 48px 24px 64px; }
+      h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+      h2 { margin: 0 0 10px; font-size: 1.15rem; }
+      p { max-width: 78ch; }
+      .lead { margin: 0 0 28px; color: var(--muted); font-size: 1.1rem; }
+      .legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 22px; }
+      .legend span { padding: 7px 12px; border-radius: 999px; font-weight: 650; }
+      .legend-guide { color: var(--guide); background: var(--guide-soft); }
+      .legend-sensor { color: var(--sensor); background: var(--sensor-soft); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+      table { width: 100%; min-width: 760px; border-collapse: collapse; }
+      caption { padding: 14px 16px; color: var(--muted); text-align: left; }
+      th, td { padding: 18px 20px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+      thead th { border-top: 0; }
+      thead th:first-child { width: 20%; background: var(--panel); }
+      .guide-heading { color: var(--guide); background: var(--guide-soft); }
+      .sensor-heading { color: var(--sensor); background: var(--sensor-soft); }
+      tbody th { background: var(--panel); }
+      tbody tr + tr th, tbody tr + tr td { border-top: 1px solid var(--line); }
+      ul { margin: 8px 0 0; padding-left: 20px; }
+      li + li { margin-top: 8px; }
+      a { color: #174ea6; text-underline-offset: 3px; }
+      .note {
+        margin-top: 22px;
+        padding: 16px 18px;
+        border-left: 4px solid #8a4b08;
+        border-radius: 6px;
+        background: #fff3df;
+      }
+      .note p { margin: 0; }
+      @media (max-width: 600px) {
+        main { padding: 32px 16px 48px; }
+        th, td { padding: 14px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Matrice des guides et des senseurs</h1>
+      <p class="lead">
+        Un <strong>guide</strong> oriente l’agent avant ou pendant son travail
+        (<em>feedforward</em>). Un <strong>senseur</strong> observe le code ou son
+        comportement et lui fournit un retour (<em>feedback</em>).
+      </p>
+
+      <div class="legend" aria-label="Légende">
+        <span class="legend-guide">Guide · consignes en amont</span>
+        <span class="legend-sensor">Senseur · retour sur le résultat</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Mécanismes repérés dans le dépôt Gesta</caption>
+          <thead>
+            <tr>
+              <th scope="col">Type</th>
+              <th scope="col" class="guide-heading">Guide — feedforward</th>
+              <th scope="col" class="sensor-heading">Senseur — feedback</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Inférentiel<br /><span>(interprété par une IA)</span></th>
+              <td>
+                <ul>
+                  <li>
+                    Les <a href="../../.github/copilot-instructions.md">instructions de Copilot</a>
+                    orientent l’agent sur l’architecture, les conventions et les validations.
+                  </li>
+                  <li>
+                    Le <a href="../../README.md">README</a> apporte le contexte du projet et
+                    de ses objectifs.
+                  </li>
+                  <li>
+                    Le <a href="../cdc_gesta_developpement.md">cahier des charges</a>
+                    décrit les exigences métier à interpréter avant de développer une
+                    fonctionnalité.
+                  </li>
+                </ul>
+              </td>
+              <td>
+                Aucun senseur inférentiel automatique n’est configuré dans le dépôt.
+                Le <a href="../../.github/pull_request_template.md">modèle de pull request</a>
+                invite à la revue, mais n’effectue pas lui-même de revue par IA.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Computationnel<br /><span>(règles ou calculs exécutables)</span></th>
+              <td>
+                <ul>
+                  <li>
+                    Le <a href="../../package.json">package.json</a> fixe la version minimale
+                    de Node.js et propose les commandes de vérification.
+                  </li>
+                  <li>Les configurations TypeScript et Oxlint définissent des règles exécutables.</li>
+                  <li>
+                    Les tests décrivent aussi des comportements attendus : ils peuvent guider
+                    l’implémentation avant d’être lancés.
+                  </li>
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  <li><code>npm run lint</code>, <code>npm run typecheck</code>, <code>npm test</code>
+                    et <code>npm run build</code> signalent les problèmes détectés.</li>
+                  <li>
+                    Les <a href="../../backend/tests/offers.test.ts">tests API des offres</a>
+                    vérifient notamment les droits et les filtres ; les
+                    <a href="../../frontend/tests/OffersPage.test.tsx">tests de la page des offres</a>
+                    vérifient l’affichage et les interactions.
+                  </li>
+                  <li>
+                    Le <a href="../../backend/src/requireSupportedNode.ts">contrôle de version
+                    de Node.js</a> indique si la version est trop ancienne ; les
+                    <a href="../../backend/tests/nodeVersion.test.ts">tests associés</a>
+                    vérifient les versions acceptées et refusées.
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <aside class="note">
+        <p>
+          <strong>À retenir :</strong> les instructions de Copilot guident l’agent sans
+          exécuter de vérification ; le cahier des charges donne les exigences métier à
+          interpréter. Les tests unitaires ont un double rôle : leurs attentes guident
+          l’implémentation, puis leur exécution vérifie le résultat et signale les écarts.
+        </p>
+      </aside>
+    </main>
+  </body>
+</html>
