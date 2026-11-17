@@ -138,3 +138,49 @@ describe("GET /offers : filtre par période", () => {
     expect(response.body.error.code).toBe("INVALID_QUERY");
   });
 });
+
+describe("GET /offers : recherche par titre", () => {
+  const search = (q: string, token = tokenFor("ADMIN", ADMINISTRATOR.ANNE_LECLERCQ)) =>
+    request(app).get("/offers").query({ q }).set("Authorization", token);
+
+  it("cherche une expression partielle sans tenir compte de la casse et des espaces périphériques", async () => {
+    const response = await search("  api rEsT  ");
+
+    expect(response.status).toBe(200);
+    expect(offerIds(response.body)).toEqual([OFFER.BILLING_API]);
+  });
+
+  it("recherche l'expression entière plutôt que chaque mot séparément", async () => {
+    const response = await search("API facturation");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  it("ignore une recherche vide", async () => {
+    const response = await search("   ");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(10);
+  });
+
+  it("renvoie une liste vide sans correspondance", async () => {
+    const response = await search("aucun titre ne contient ce texte");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  it("combine la recherche et la période sans élargir la visibilité étudiant", async () => {
+    const response = await request(app)
+      .get("/offers")
+      .query({ q: "API", period: "P2" })
+      .set("Authorization", tokenFor("STUDENT", STUDENT.LUCAS_DUPONT));
+
+    expect(response.status).toBe(200);
+    expect(offerIds(response.body)).toEqual([OFFER.BILLING_API]);
+    expect(response.body.every((offer: { status: string }) => offer.status === "PUBLISHED")).toBe(
+      true,
+    );
+  });
+});

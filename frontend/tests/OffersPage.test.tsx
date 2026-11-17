@@ -59,6 +59,48 @@ describe("OffersPage", () => {
     );
   });
 
+  it("transmet la recherche de titre et la combine avec la période", async () => {
+    const fetchMock = stubFetch({ "/api/offers": () => Response.json(offers) });
+
+    render(<OffersPage user={contactUser} token="jeton" onUnauthorized={vi.fn()} />);
+    await screen.findByText("Refonte du portail client");
+
+    fireEvent.change(screen.getByLabelText("Rechercher par titre"), {
+      target: { value: "  API REST " },
+    });
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenLastCalledWith("/api/offers?q=API%20REST", expect.anything()),
+    );
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Période" }), {
+      target: { value: "P2" },
+    });
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenLastCalledWith(
+        "/api/offers?period=P2&q=API%20REST",
+        expect.anything(),
+      ),
+    );
+  });
+
+  it("affiche un message adapté quand la recherche ne trouve aucune offre", async () => {
+    stubFetch({
+      "/api/offers?q=absent": () => Response.json([]),
+      "/api/offers": () => Response.json(offers),
+    });
+
+    render(<OffersPage user={contactUser} token="jeton" onUnauthorized={vi.fn()} />);
+    await screen.findByText("Refonte du portail client");
+
+    fireEvent.change(screen.getByLabelText("Rechercher par titre"), {
+      target: { value: "absent" },
+    });
+
+    expect(await screen.findByText("Aucune offre ne correspond à la recherche.")).toBeInTheDocument();
+  });
+
   it("adapte la description au profil", async () => {
     stubFetch({ "/api/offers": () => Response.json([]) });
 

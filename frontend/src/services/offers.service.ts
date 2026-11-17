@@ -6,10 +6,15 @@ import { isOfferList } from "../utils/guards.ts";
 export const getOffers = async (
   token: string,
   period?: PeriodCode,
+  search?: string,
   signal?: AbortSignal,
 ): Promise<Offer[]> => {
-  const query = period === undefined ? "" : `?period=${encodeURIComponent(period)}`;
-  const response = await fetch(`${API_URL}/offers${query}`, {
+  const params = new URLSearchParams();
+  if (period !== undefined) params.set("period", period);
+  const trimmedSearch = search?.trim();
+  if (trimmedSearch) params.set("q", trimmedSearch);
+  const query = params.toString().replace(/\+/g, "%20");
+  const response = await fetch(`${API_URL}/offers${query ? `?${query}` : ""}`, {
     headers: { Authorization: token },
     signal,
   });
