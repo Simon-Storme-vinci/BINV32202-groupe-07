@@ -68,3 +68,12 @@
 - **Vérification complète** — `npm.cmd run check` : réussie, lint et vérification des
   types pour les deux workspaces, 10 fichiers et 129 tests backend, 8 fichiers et
   54 tests frontend, puis builds backend et frontend.
+
+## Conversation : vérification Git et fichier protégé
+
+1. La commande `git status --short --branch` a confirmé que la branche `semaine4`
+   est synchronisée avec `origin/semaine4` et que `.github/hooks/` est non suivi.
+2. Une tentative de suppression de
+   [.github/hooks/demo-protected.txt](../../.github/hooks/demo-protected.txt) avec
+   `Remove-Item` a été bloquée par la protection `Tool Guardian`.
+3. Le fichier protégé a donc été conservé.
