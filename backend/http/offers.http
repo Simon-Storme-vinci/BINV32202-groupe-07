@@ -34,6 +34,10 @@ Authorization: {{admin.response.body.token}}
 GET http://localhost:3000/offers?period=P1
 Authorization: {{admin.response.body.token}}
 
+### Offres dont le titre contient « API REST » en période P2
+GET http://localhost:3000/offers?period=P2&q=API%20REST
+Authorization: {{admin.response.body.token}}
+
 ### Offres vues par l'étudiant
 GET http://localhost:3000/offers
 Authorization: {{student.response.body.token}}
