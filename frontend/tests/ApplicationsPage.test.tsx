@@ -24,6 +24,26 @@ const applications = [
     message: null,
     appliedAt: "2026-09-30 10:30:00",
   },
+  {
+    id: 3,
+    offerId: 3,
+    offerTitle: "API de facturation",
+    companyShortName: "Orbis",
+    academicYear: "2026-2027",
+    status: "SELECTED",
+    message: null,
+    appliedAt: "2026-09-28 09:00:00",
+  },
+  {
+    id: 4,
+    offerId: 4,
+    offerTitle: "Portail étudiant",
+    companyShortName: "Datavia",
+    academicYear: "2026-2027",
+    status: "REJECTED",
+    message: null,
+    appliedAt: "2026-09-25 14:30:00",
+  },
 ];
 
 describe("ApplicationsPage", () => {
@@ -35,6 +55,17 @@ describe("ApplicationsPage", () => {
     expect(await screen.findByText("Application React")).toBeInTheDocument();
     expect(screen.getByText("En cours")).toBeInTheDocument();
     expect(screen.getByText("Retirée")).toBeInTheDocument();
+  });
+
+  it("affiche les statuts traités sans proposer le retrait", async () => {
+    stubFetch({ "/api/applications": () => Response.json(applications) });
+
+    render(<ApplicationsPage token="jeton" onUnauthorized={vi.fn()} />);
+
+    expect(await screen.findByText("API de facturation")).toBeInTheDocument();
+    expect(screen.getByText("Retenue")).toBeInTheDocument();
+    expect(screen.getByText("Non retenue")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Retirer" })).toHaveLength(1);
   });
 
   it("retire une candidature après confirmation", async () => {

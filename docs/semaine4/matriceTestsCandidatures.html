@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Synthèse des tests des candidatures EF-32 et EF-33."
+    />
+    <title>Tests des candidatures — EF-32 / EF-33</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #172033;
+        --muted: #526078;
+        --line: #d9e0ea;
+        --panel: #f5f7fb;
+        --covered: #087443;
+        --covered-soft: #e8f7ef;
+        --partial: #8a4b08;
+        --partial-soft: #fff3df;
+        --missing: #a4262c;
+        --missing-soft: #fff0ef;
+        --link: #174ea6;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #fff;
+        font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main { max-width: 1440px; margin: 0 auto; padding: 44px 24px 64px; }
+      h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+      h2 { margin: 38px 0 10px; font-size: 1.45rem; }
+      p { max-width: 90ch; }
+      .lead { margin: 0 0 24px; color: var(--muted); font-size: 1.1rem; }
+      .summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0 28px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .9rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .covered { color: var(--covered); background: var(--covered-soft); }
+      .partial { color: var(--partial); background: var(--partial-soft); }
+      .missing { color: var(--missing); background: var(--missing-soft); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+      table { width: 100%; min-width: 1100px; border-collapse: collapse; }
+      caption { padding: 14px 16px; color: var(--muted); text-align: left; }
+      th, td {
+        padding: 15px 16px;
+        border-top: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th { border-top: 0; background: var(--panel); }
+      tbody th { width: 8%; background: var(--panel); }
+      .case { min-width: 260px; }
+      .test { min-width: 390px; }
+      .finding { min-width: 390px; }
+      a { color: var(--link); text-underline-offset: 3px; }
+      code {
+        padding: 1px 4px;
+        border-radius: 4px;
+        background: var(--panel);
+        font-size: .92em;
+      }
+      .note {
+        margin-top: 20px;
+        padding: 16px 18px;
+        border-radius: 8px;
+        background: var(--panel);
+      }
+      .note p { margin: 0; }
+      .small { color: var(--muted); font-size: .94rem; }
+      @media (max-width: 600px) {
+        main { padding: 30px 16px 48px; }
+        th, td { padding: 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Tests des candidatures</h1>
+      <p class="lead">
+        Synthèse de l’audit des exigences EF-32 — candidater et retirer sa candidature —
+        et EF-33 — consulter ses candidatures et leur statut.
+      </p>
+
+      <p>
+        Les constats reposent sur les assertions réellement présentes dans les tests,
+        et non uniquement sur l’appel d’une route ou le rendu d’un composant.
+        Aucun code applicatif n’a été modifié.
+      </p>
+
+      <div class="summary" aria-label="Légende">
+        <span class="badge covered">Couvert</span>
+        <span class="badge partial">Partiel</span>
+        <span class="badge missing">Manque confirmé</span>
+      </div>
+
+      <h2>EF-32 — Candidater et retirer sa candidature</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>Création, retrait et règles d’accès aux candidatures.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Exigence</th>
+              <th scope="col" class="case">Cas à vérifier</th>
+              <th scope="col" class="test">Tests existants et assertion utile</th>
+              <th scope="col" class="finding">Manque confirmé ou constat</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Créer une candidature à une offre publiée avec un message.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a>,
+                « crée une candidature puis refuse le doublon actif » :
+                <code>status === 201</code>, statut <code>IN_PROGRESS</code> et message
+                conservé.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Créer une candidature sans message.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a>,
+                « retire logiquement une candidature et autorise une nouvelle candidature » :
+                <code>status === 201</code> et <code>message === null</code>.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Ouvrir le formulaire depuis une offre et saisir un message.</td>
+              <td>
+                <a href="../../frontend/tests/OffersPage.test.tsx">OffersPage.test.tsx</a>,
+                « ouvre la modale de candidature depuis une offre » : la boîte de dialogue,
+                le champ facultatif et le bouton « Confirmer » sont présents.
+              </td>
+              <td>
+                <span class="badge partial">Partiel</span>
+                <br />
+                Le test ne vérifie pas la soumission, le payload POST ni la fermeture après succès.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Refuser une candidature à une offre non publiée.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> :
+                réponse <code>404</code>, code <code>NOT_FOUND</code>, puis absence de
+                l’offre dans la liste des candidatures.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Retirer une candidature encore en cours et la conserver dans l’historique.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> :
+                retrait en <code>204</code>, candidature retrouvée avec
+                <code>WITHDRAWN</code>, puis nouvelle candidature autorisée avec un nouvel ID.
+              </td>
+              <td><span class="badge covered">Couvert côté API</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Refuser le retrait d’une candidature déjà traitée.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> :
+                réponse <code>409</code> et code <code>APPLICATION_PROCESSED</code>.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Confirmer le retrait depuis l’interface.</td>
+              <td>
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx">ApplicationsPage.test.tsx</a> :
+                clic sur « Retirer » et vérification d’un appel DELETE sur l’identifiant attendu.
+              </td>
+              <td>
+                <span class="badge partial">Partiel</span>
+                <br />
+                Aucun test de l’annulation de <code>confirm()</code>, de l’état après 204 ou de
+                l’erreur 409 affichée.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Réserver création et retrait aux étudiants.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> :
+                GET, POST et DELETE d’un administrateur renvoient tous <code>403</code> /
+                <code>FORBIDDEN</code>.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Empêcher un étudiant de retirer la candidature d’un autre.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> :
+                réponse <code>404</code> / <code>NOT_FOUND</code>, puis vérification que la
+                candidature reste <code>IN_PROGRESS</code> pour son propriétaire.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-32</th>
+              <td>Gérer le bouton « Candidater » selon l’historique.</td>
+              <td>
+                <a href="../../frontend/tests/OffersPage.test.tsx">OffersPage.test.tsx</a>
+                vérifie seulement l’ouverture avec une liste de candidatures vide.
+              </td>
+              <td>
+                <span class="badge missing">Manque confirmé</span>
+                <br />
+                Aucun test ne prouve qu’une candidature <code>IN_PROGRESS</code> masque le bouton
+                et qu’une candidature <code>WITHDRAWN</code> le rend à nouveau disponible.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>EF-33 — Consulter ses candidatures et leur statut</h2>
+      <div class="table-wrap">
+        <table>
+          <caption>Isolation des candidatures et affichage de leurs statuts.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Exigence</th>
+              <th scope="col" class="case">Cas à vérifier</th>
+              <th scope="col" class="test">Tests existants et assertion utile</th>
+              <th scope="col" class="finding">Manque confirmé ou constat</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Un étudiant ne voit pas les candidatures d’un autre étudiant.</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a> :
+                réponse limitée à l’étudiant connecté, avec longueur attendue et offre
+                correspondante.
+              </td>
+              <td><span class="badge covered">Couvert côté API</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Afficher le statut « En cours ».</td>
+              <td>
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx">ApplicationsPage.test.tsx</a> :
+                présence du libellé « En cours » ; l’API vérifie aussi
+                <code>IN_PROGRESS</code>.
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Afficher le statut « Retirée ».</td>
+              <td>
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx">ApplicationsPage.test.tsx</a> :
+                présence du libellé « Retirée » sur une donnée simulée ; l’API vérifie
+                <code>WITHDRAWN</code>.
+              </td>
+              <td>
+                <span class="badge partial">Partiel</span>
+                <br />
+                L’intégration entre la réponse API réelle et l’affichage n’est pas testée
+                dans le même scénario.
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">EF-33</th>
+              <td>Afficher les statuts « Retenue » et « Non retenue ».</td>
+              <td>
+                <a href="../../backend/tests/applications.test.ts">applications.test.ts</a>
+                vérifie <code>SELECTED</code> et <code>REJECTED</code> côté API. Les libellés
+                existent dans <a href="../../frontend/src/utils/labels.ts">labels.ts</a>.
+                <a href="../../frontend/tests/ApplicationsPage.test.tsx">ApplicationsPage.test.tsx</a>
+                vérifie également les deux libellés et l’absence du bouton « Retirer ».
+              </td>
+              <td><span class="badge covered">Couvert</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p>
+          <strong>Priorité de test recommandée :</strong> tester d’abord la soumission complète
+          de la candidature. Ajouter ensuite l’annulation du retrait, l’affichage après retrait
+          et la disponibilité du bouton selon le statut. L’affichage de
+          <code>SELECTED</code> / <code>REJECTED</code> est désormais couvert par le test
+          frontend dédié.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
