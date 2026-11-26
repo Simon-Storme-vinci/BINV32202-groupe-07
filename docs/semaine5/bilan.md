@@ -32,3 +32,27 @@
   car Chrome n’était pas installé au chemin attendu par le serveur MCP.
 - L’exécution a tout de même été poursuivie avec les outils navigateur disponibles ;
   aucune modification de l’application ni aucun script de test n’a été ajouté.
+
+## 4. Vérifier la qualité des tests et comparer les approches
+
+- Code initial, le test réussit.
+- Filtrage temporairement désactivé, le test échoue sur l’assertion des identifiants
+  attendus. Il reçoit les 10 offres au lieu de la seule offre correspondant à la recherche.
+- Après restauration du code, le même test réussit à nouveau.
+
+### Comparaison
+
+1. Playwright MCP permet à l’agent de piloter un navigateur pendant la conversation
+   et d’observer l’interface. L’outil `browser_navigate` à été appellé avec l’URL
+   `http://localhost:5173/offres`. La navigation n’a toutefois pas abouti : le client MCP
+   a échoué à s’initialiser sur `http://localhost:8931/mcp`.
+
+2. Playwright Test apporte des scénarios répétables avec des assertions automatiques,
+automatiques,
+   exécutables à nouveau pour détecter les régressions et intégrables à la CI. Un compte
+   rendu MCP d’une exploration interactive ne garantit pas, à lui seul, ces vérifications
+   reproductibles.
+
+3. Je privilégierais l’exploration interactive avec MCP pour découvrir une interface
+   ou investiguer un comportement imprévu. Je privilégierais un test automatisé pour
+   vérifier de façon répétable un comportement connu et prévenir les régressions.
